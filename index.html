@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site em 24h — Seu negócio online ainda hoje</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2eb;
+    --yellow: #f5c400;
+    --yellow-dark: #c9a000;
+    --gray: #1a1a1a;
+    --gray-mid: #2e2e2e;
+    --gray-light: #888;
+    --accent: #ff4d1c;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Manrope', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--yellow);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-follower {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--yellow);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s ease, width 0.3s, height 0.3s;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    color: var(--yellow);
+  }
+  .logo span { color: var(--white); }
+  nav a {
+    color: var(--gray-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--yellow); }
+  .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+  .nav-cta {
+    background: var(--yellow) !important;
+    color: var(--black) !important;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2px;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--yellow-dark) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10rem 4rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 40%, rgba(245,196,0,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,77,28,0.05) 0%, transparent 70%);
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,196,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,196,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(245,196,0,0.1);
+    border: 1px solid rgba(245,196,0,0.25);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    width: fit-content;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--yellow);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.5); }
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4.5rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    animation: fadeUp 0.8s 0.15s ease both;
+    position: relative;
+    z-index: 1;
+  }
+  h1 .highlight {
+    color: var(--yellow);
+    position: relative;
+    display: inline-block;
+  }
+  h1 .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: lineIn 0.6s 1s ease forwards;
+  }
+  @keyframes lineIn { to { transform: scaleX(1); } }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--gray-light);
+    font-weight: 400;
+    max-width: 560px;
+    line-height: 1.7;
+    margin: 2rem 0 3rem;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .hero-sub strong { color: var(--white); font-weight: 600; }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    animation: fadeUp 0.8s 0.45s ease both;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 2px;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary:hover { transform: translateY(-2px); }
+
+  .btn-ghost {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: gap 0.2s;
+  }
+  .btn-ghost:hover { gap: 0.9rem; }
+  .btn-ghost svg { transition: transform 0.2s; }
+  .btn-ghost:hover svg { transform: translateX(4px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 5rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    animation: fadeUp 0.8s 0.6s ease both;
+    flex-wrap: wrap;
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+  }
+
+  .hero-visual {
+    position: absolute;
+    right: 4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+    animation: fadeLeft 1s 0.5s ease both;
+  }
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translateY(-50%) translateX(40px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+  }
+  .mock-browser {
+    background: var(--gray);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .mock-bar {
+    background: var(--gray-mid);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .mock-dots { display: flex; gap: 5px; }
+  .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .mock-dot:nth-child(1) { background: #ff5f57; }
+  .mock-dot:nth-child(2) { background: #febc2e; }
+  .mock-dot:nth-child(3) { background: #28c840; }
+  .mock-url {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+    color: var(--gray-light);
+    font-family: monospace;
+  }
+  .mock-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .mock-hero-block {
+    background: linear-gradient(135deg, var(--yellow) 0%, var(--accent) 100%);
+    border-radius: 6px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .mock-hero-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--black); }
+  .mock-hero-sub { font-size: 0.65rem; color: rgba(0,0,0,0.6); font-weight: 600; }
+  .mock-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+  .mock-card { background: var(--gray-mid); border-radius: 4px; height: 60px; }
+  .mock-card:nth-child(2) { background: rgba(245,196,0,0.15); }
+  .mock-text-lines { display: flex; flex-direction: column; gap: 0.4rem; }
+  .mock-line { background: var(--gray-mid); border-radius: 2px; height: 8px; }
+  .mock-line:nth-child(1) { width: 80%; }
+  .mock-line:nth-child(2) { width: 65%; }
+  .mock-line:nth-child(3) { width: 90%; background: rgba(245,196,0,0.15); }
+  .mock-btn-row { display: flex; gap: 0.5rem; }
+  .mock-btn { background: var(--yellow); border-radius: 3px; height: 28px; width: 80px; }
+  .mock-btn-ghost { border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; height: 28px; width: 60px; }
+
+  .timer-badge {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: var(--accent);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(255,77,28,0.4);
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-6px) rotate(-3deg); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* COMO FUNCIONA */
+  section { padding: 7rem 4rem; }
+  .section-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 1rem;
+  }
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .step {
+    background: var(--black);
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .step:hover { background: rgba(245,196,0,0.04); }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 6rem;
+    color: rgba(245,196,0,0.08);
+    line-height: 1;
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    transition: color 0.3s;
+  }
+  .step:hover .step-num { color: rgba(245,196,0,0.15); }
+  .step-icon {
+    width: 48px; height: 48px;
+    background: rgba(245,196,0,0.1);
+    border: 1px solid rgba(245,196,0,0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+  .step h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .step p {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    line-height: 1.7;
+  }
+
+  /* PLANOS */
+  .plans-section { background: var(--gray); }
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 5rem;
+    background: rgba(255,255,255,0.05);
+  }
+  .plan {
+    background: var(--black);
+    padding: 3rem 2.5rem;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  .plan.featured {
+    background: var(--yellow);
+    color: var(--black);
+  }
+  .plan-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+  .plan-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .plan-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .plan-price span {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.6;
+  }
+  .plan-setup {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-bottom: 2rem;
+  }
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+  }
+  .plan-features li {
+    font-size: 0.88rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+  .plan-features li::before {
+    content: '✓';
+    font-weight: 700;
+    color: var(--yellow);
+    flex-shrink: 0;
+  }
+  .plan.featured .plan-features li::before { color: var(--black); }
+  .plan-cta {
+    display: block;
+    text-align: center;
+    padding: 0.9rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .plan:not(.featured) .plan-cta {
+    border: 1.5px solid rgba(245,196,0,0.4);
+    color: var(--yellow);
+  }
+  .plan:not(.featured) .plan-cta:hover {
+    background: rgba(245,196,0,0.08);
+  }
+  .plan.featured .plan-cta {
+    background: var(--black);
+    color: var(--yellow);
+  }
+  .plan.featured .plan-cta:hover { background: var(--gray); }
+
+  /* GARANTIA */
+  .guarantee-section {
+    background: var(--yellow);
+    color: var(--black);
+    padding: 5rem 4rem;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+  .guarantee-icon {
+    font-size: 5rem;
+    flex-shrink: 0;
+  }
+  .guarantee-section h2 {
+    color: var(--black);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    margin-bottom: 1rem;
+  }
+  .guarantee-section p {
+    font-size: 1rem;
+    opacity: 0.7;
+    max-width: 500px;
+    line-height: 1.7;
+  }
+
+  /* FAQ */
+  .faq-list { margin-top: 4rem; max-width: 760px; }
+  .faq-item {
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 1.75rem 0;
+  }
+  .faq-q {
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .faq-q::after {
+    content: '+';
+    font-size: 1.5rem;
+    color: var(--yellow);
+    font-weight: 300;
+    transition: transform 0.3s;
+  }
+  .faq-item.open .faq-q::after { transform: rotate(45deg); }
+  .faq-a {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    line-height: 1.8;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+  }
+  .faq-item.open .faq-a { max-height: 200px; padding-top: 1rem; }
+
+  /* CTA FINAL */
+  .final-cta {
+    background: var(--black);
+    text-align: center;
+    padding: 8rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(245,196,0,0.06) 0%, transparent 70%);
+  }
+  .final-cta h2 { font-size: clamp(3rem, 8vw, 7rem); position: relative; }
+  .final-cta p { color: var(--gray-light); max-width: 500px; margin: 1.5rem auto 3rem; font-size: 1rem; line-height: 1.7; }
+  .final-cta .btn-primary { font-size: 1rem; padding: 1.2rem 3rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--gray);
+    padding: 3rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer .logo { font-size: 1.4rem; }
+  footer p { font-size: 0.8rem; color: var(--gray-light); }
+
+  /* TICKER */
+  .ticker-wrap {
+    background: var(--yellow);
+    overflow: hidden;
+    padding: 0.75rem 0;
+    white-space: nowrap;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: ticker 18s linear infinite;
+  }
+  .ticker-track span {
+    color: var(--black);
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 2.5rem;
+  }
+  .ticker-track span.dot { padding: 0; color: var(--accent); }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { padding: 8rem 2rem 5rem; }
+    .hero-visual { display: none; }
+    section { padding: 5rem 2rem; }
+    .steps, .plans-grid { grid-template-columns: 1fr; }
+    h1 { font-size: clamp(3.5rem, 15vw, 7rem); }
+    .guarantee-section { flex-direction: column; gap: 1.5rem; text-align: center; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="follower"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Site<span>24h</span></div>
+  <div class="nav-links">
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#planos">Planos</a>
+    <a href="#faq">FAQ</a>
+    <a href="briefing-site24h.html" class="nav-cta">Quero meu site</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap" style="margin-top: 0; position: relative; z-index: 50;">
+  <div class="ticker-track">
+    <span>Site em 24 horas</span><span class="dot">◆</span>
+    <span>Loja virtual pronta</span><span class="dot">◆</span>
+    <span>Apenas R$ 200/mês</span><span class="dot">◆</span>
+    <span>Site institucional</span><span class="dot">◆</span>
+    <span>Sem taxa de instalação</span><span class="dot">◆</span>
+    <span>Suporte incluído</span><span class="dot">◆</span>
+    <span>Site em 24 horas</span><span class="dot">◆</span>
+    <span>Loja virtual pronta</span><span class="dot">◆</span>
+    <span>Apenas R$ 200/mês</span><span class="dot">◆</span>
+    <span>Site institucional</span><span class="dot">◆</span>
+    <span>Sem taxa de instalação</span><span class="dot">◆</span>
+    <span>Suporte incluído</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-tag">⚡ Entrega garantida em 24 horas</div>
+
+  <h1>SEU NEGÓCIO<br><span class="highlight">ONLINE</span><br>HOJE.</h1>
+
+  <p class="hero-sub">
+    Site profissional, loja virtual ou institucional por
+    <strong>R$ 200 por mês.</strong> Sem contrato longo, sem dor de cabeça.
+    Não pagou? O site pausa. Simples assim.
+  </p>
+
+  <div class="hero-actions">
+    <a href="briefing-site24h.html" class="btn-primary">Quero meu site agora</a>
+    <a href="#como-funciona" class="btn-ghost">
+      Ver como funciona
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">24h</div>
+      <div class="stat-label">Prazo de entrega</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">R$200</div>
+      <div class="stat-label">Por mês, tudo incluso</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Contrato de fidelidade</div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="mock-browser">
+      <div class="mock-bar">
+        <div class="mock-dots">
+          <div class="mock-dot"></div>
+          <div class="mock-dot"></div>
+          <div class="mock-dot"></div>
+        </div>
+        <div class="mock-url">seunegocio.com.br</div>
+      </div>
+      <div class="mock-content">
+        <div class="mock-hero-block">
+          <div class="mock-hero-title">SEU NEGÓCIO</div>
+          <div class="mock-hero-sub">ONLINE EM 24 HORAS</div>
+        </div>
+        <div class="mock-cards">
+          <div class="mock-card"></div>
+          <div class="mock-card"></div>
+          <div class="mock-card"></div>
+        </div>
+        <div class="mock-text-lines">
+          <div class="mock-line"></div>
+          <div class="mock-line"></div>
+          <div class="mock-line"></div>
+        </div>
+        <div class="mock-btn-row">
+          <div class="mock-btn"></div>
+          <div class="mock-btn-ghost"></div>
+        </div>
+      </div>
+    </div>
+    <div class="timer-badge">⏱ 24H</div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="section-tag reveal">Processo</div>
+  <h2 class="reveal">COMO <span style="color:var(--yellow)">FUNCIONA</span></h2>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">📋</div>
+      <h3>Você preenche o briefing</h3>
+      <p>Um formulário rápido com nome da empresa, cores, produtos ou serviços e o que você quer no site. Leva menos de 10 minutos.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:0.1s">
+      <div class="step-num">02</div>
+      <div class="step-icon">🛠️</div>
+      <h3>A gente constrói em 24h</h3>
+      <p>Nossa equipe coloca mãos à obra. Site profissional, responsivo e pronto para vender. Em até 24 horas o link é seu.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:0.2s">
+      <div class="step-num">03</div>
+      <div class="step-icon">🚀</div>
+      <h3>Paga e fica no ar</h3>
+      <p>R$ 200 por mês e seu site fica online. Cancelou? O site pausa. Voltou? Reativa na hora. Sem burocracia.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section id="planos" class="plans-section">
+  <div class="section-tag reveal">Preços transparentes</div>
+  <h2 class="reveal">ESCOLHA SEU <span style="color:var(--yellow)">PLANO</span></h2>
+
+  <div class="plans-grid">
+    <div class="plan reveal">
+      <div class="plan-name">Institucional</div>
+      <div class="plan-price">R$200<span>/mês</span></div>
+      <div class="plan-setup">+ R$ 300 de setup único</div>
+      <ul class="plan-features">
+        <li>Site até 5 páginas</li>
+        <li>Design responsivo (mobile)</li>
+        <li>Formulário de contato</li>
+        <li>Mapa e WhatsApp integrado</li>
+        <li>Domínio e hospedagem</li>
+        <li>Entrega em 24 horas</li>
+      </ul>
+      <a href="briefing-site24h.html" class="plan-cta">Começar agora</a>
+    </div>
+
+    <div class="plan featured reveal" style="transition-delay:0.1s">
+      <div class="plan-badge">Mais popular</div>
+      <div class="plan-name">Loja Virtual</div>
+      <div class="plan-price">R$350<span>/mês</span></div>
+      <div class="plan-setup">+ R$ 500 de setup único</div>
+      <ul class="plan-features">
+        <li>Loja com até 50 produtos</li>
+        <li>Pagamento online integrado</li>
+        <li>Gestão de pedidos</li>
+        <li>Cálculo de frete automático</li>
+        <li>Cupons de desconto</li>
+        <li>Entrega em 24 horas</li>
+        <li>Suporte prioritário</li>
+      </ul>
+      <a href="briefing-site24h.html" class="plan-cta">Quero minha loja</a>
+    </div>
+
+    <div class="plan reveal" style="transition-delay:0.2s">
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">R$500<span>/mês</span></div>
+      <div class="plan-setup">+ R$ 700 de setup único</div>
+      <ul class="plan-features">
+        <li>Tudo do plano Loja Virtual</li>
+        <li>SEO avançado configurado</li>
+        <li>Google Meu Negócio</li>
+        <li>Blog integrado</li>
+        <li>Relatório mensal</li>
+        <li>Gestão de Google Ads</li>
+        <li>Suporte VIP 7 dias</li>
+      </ul>
+      <a href="briefing-site24h.html" class="plan-cta">Começar agora</a>
+    </div>
+  </div>
+</section>
+
+<!-- GARANTIA -->
+<div class="guarantee-section reveal">
+  <div class="guarantee-icon">🛡️</div>
+  <div>
+    <h2>GARANTIA DE 7 DIAS</h2>
+    <p>Se o site não for entregue em 24 horas ou você não ficar satisfeito com o resultado nos primeiros 7 dias, devolvemos 100% do valor do setup. Sem discussão.</p>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-tag reveal">Dúvidas frequentes</div>
+  <h2 class="reveal">PERGUNTAS <span style="color:var(--yellow)">& RESPOSTAS</span></h2>
+
+  <div class="faq-list">
+    <div class="faq-item reveal">
+      <div class="faq-q">O que acontece se eu parar de pagar?</div>
+      <div class="faq-a">O site fica offline enquanto a mensalidade estiver em atraso. Assim que o pagamento for realizado, o site volta ao ar automaticamente. Seus dados ficam salvos por até 90 dias.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Realmente fica pronto em 24 horas?</div>
+      <div class="faq-a">Sim! Após o preenchimento do briefing e confirmação do pagamento do setup, seu site fica pronto em até 24 horas úteis. Em casos muito complexos, avisamos com antecedência.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Preciso comprar domínio separado?</div>
+      <div class="faq-a">Não. O domínio e a hospedagem já estão incluídos em todos os planos. Você não precisa se preocupar com nada técnico.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Posso mudar de plano depois?</div>
+      <div class="faq-a">Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. A diferença é cobrada ou creditada proporcionalmente.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Tem contrato de fidelidade?</div>
+      <div class="faq-a">Não existe contrato de fidelidade. Você paga mês a mês e pode cancelar quando quiser, sem multa.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="final-cta" id="contato">
+  <h2 class="reveal">PRONTO PARA <span style="color:var(--yellow)">COMEÇAR?</span></h2>
+  <p class="reveal">Preencha o briefing do seu site agora. Leva menos de 10 minutos e seu site fica pronto em até 24 horas.</p>
+  <a href="briefing-site24h.html" class="btn-primary reveal" style="font-size:1rem; padding:1.2rem 3rem;">
+    📋 Preencher briefing agora
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Site<span>24h</span></div>
+  <p>© 2025 Site24h · Todos os direitos reservados</p>
+  <p style="font-size:0.75rem; color: var(--gray-light);">Seu negócio online em 24 horas.</p>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const follower = document.getElementById('follower');
+  let mx = 0, my = 0, fx = 0, fy = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  });
+
+  function animateFollower() {
+    fx += (mx - fx) * 0.12;
+    fy += (my - fy) *.12;
+    follower.style.transform = `translate(${fx - 18}px, ${fy - 18}px)`;
+    requestAnimationFrame(animateFollower);
+  }
+  animateFollower();
+
+  // FAQ
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // SCROLL REVEAL
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // TICKER duplicate
+  const track = document.querySelector('.ticker-track');
+  track.innerHTML += track.innerHTML;
+</script>
+</body>
+</html>

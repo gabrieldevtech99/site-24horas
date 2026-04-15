@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site24h — Briefing do seu site</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2eb;
+    --yellow: #f5c400;
+    --yellow-dark: #c9a000;
+    --yellow-dim: rgba(245,196,0,0.10);
+    --gray: #161616;
+    --gray2: #1e1e1e;
+    --gray3: #2a2a2a;
+    --muted: #666;
+    --border: rgba(255,255,255,0.07);
+    --radius: 6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(8px);
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.06em; color: var(--white); text-decoration: none; }
+  .logo span { color: var(--yellow); }
+  .nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+  .nav-back:hover { color: var(--yellow); }
+
+  /* ── HERO BRIEFING ── */
+  .hero-brief {
+    padding: 5rem 3rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-brief::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,196,0,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--yellow-dim);
+    border: 1px solid rgba(245,196,0,0.2);
+    color: var(--yellow);
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.35rem 1rem; border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+  .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--yellow); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.6)} }
+
+  .hero-brief h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    margin-bottom: 1rem;
+  }
+  .hero-brief h1 span { color: var(--yellow); }
+  .hero-brief p { font-size: 1rem; color: var(--muted); max-width: 500px; margin: 0 auto 3rem; line-height: 1.7; }
+
+  /* ── STEPS BAR ── */
+  .steps-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin-bottom: 4rem;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    background: var(--gray);
+    transition: all 0.3s;
+    position: relative;
+  }
+  .step-pill:first-child { border-radius: 4px 0 0 4px; }
+  .step-pill:last-child { border-radius: 0 4px 4px 0; }
+  .step-pill.active { background: var(--yellow); color: var(--black); border-color: var(--yellow); font-weight: 800; }
+  .step-pill.done { background: var(--gray2); color: var(--yellow); border-color: rgba(245,196,0,0.3); }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; }
+
+  /* ── FORM CONTAINER ── */
+  .form-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.5rem 6rem;
+  }
+
+  /* ── STEP PANELS ── */
+  .step-panel { display: none; animation: fadeUp 0.4s ease; }
+  .step-panel.active { display: block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── TIPO SELECTOR ── */
+  .tipo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .tipo-card {
+    background: var(--gray2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tipo-card:hover { border-color: rgba(245,196,0,0.35); background: var(--gray3); }
+  .tipo-card.selected { border-color: var(--yellow); background: var(--yellow-dim); }
+  .tipo-card.selected::after {
+    content: '✓';
+    position: absolute; top: 0.75rem; right: 0.9rem;
+    color: var(--yellow); font-weight: 800; font-size: 1rem;
+  }
+  .tipo-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+  .tipo-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+  .tipo-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── FORM FIELDS ── */
+  .field-group {
+    background: var(--gray2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+  }
+  .field-group-title {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--yellow); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .field-group-title::after { content: ''; flex: 1; height: 1px; background: rgba(245,196,0,0.15); }
+
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 0.83rem; font-weight: 600;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .field label .req { color: var(--yellow); margin-left: 2px; }
+  .field .hint { font-size: 0.73rem; color: var(--muted); margin-bottom: 0.5rem; line-height: 1.5; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--gray3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    color: var(--white);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--yellow);
+    background: rgba(245,196,0,0.04);
+  }
+  select option { background: #1e1e1e; }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* Checkbox / Radio groups */
+  .check-group { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.25rem; }
+  .check-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: var(--gray3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.87rem;
+  }
+  .check-item:hover { border-color: rgba(245,196,0,0.3); }
+  .check-item input { accent-color: var(--yellow); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+  .check-item.checked { border-color: rgba(245,196,0,0.4); background: var(--yellow-dim); }
+
+  /* Color picker row */
+  .color-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .color-opt {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer; transition: transform 0.15s, border-color 0.15s;
+  }
+  .color-opt:hover { transform: scale(1.15); }
+  .color-opt.sel { border-color: var(--white); transform: scale(1.2); }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 1.5px dashed rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover { border-color: rgba(245,196,0,0.4); background: var(--yellow-dim); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+  .upload-zone p { font-size: 0.82rem; color: var(--muted); }
+  .upload-zone strong { color: var(--yellow); }
+  .file-list { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .file-tag {
+    background: var(--gray3); border: 1px solid rgba(245,196,0,0.2);
+    border-radius: 3px; padding: 0.25rem 0.6rem;
+    font-size: 0.73rem; color: var(--yellow);
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .file-tag button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
+  .file-tag button:hover { color: #ff5555; }
+
+  /* ── NAV BUTTONS ── */
+  .btn-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2rem; gap: 1rem;
+  }
+  .btn-prev {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--muted);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    padding: 0.85rem 1.75rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-prev:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+  .btn-next {
+    background: var(--yellow);
+    border: none;
+    color: var(--black);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.85rem; font-weight: 800;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 0.85rem 2.2rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .btn-next:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── PROGRESSO ── */
+  .progress-bar-wrap { margin-bottom: 2.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .progress-bar { height: 3px; background: var(--gray3); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--yellow); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* ── SUCESSO ── */
+  .success-panel {
+    text-align: center;
+    padding: 4rem 2rem;
+    display: none;
+  }
+  .success-panel.show { display: block; animation: fadeUp 0.5s ease; }
+  .success-icon { font-size: 4rem; margin-bottom: 1.5rem; display: block; }
+  .success-panel h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--yellow); margin-bottom: 0.75rem; }
+  .success-panel p { color: var(--muted); font-size: 0.95rem; line-height: 1.7; max-width: 420px; margin: 0 auto 2rem; }
+  .success-box {
+    background: var(--yellow-dim);
+    border: 1px solid rgba(245,196,0,0.25);
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    max-width: 400px; margin: 0 auto 2rem;
+    text-align: left;
+  }
+  .success-box p { color: var(--white); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .success-box p:last-child { margin: 0; }
+  .success-box strong { color: var(--yellow); }
+
+  /* ── RESUMO ── */
+  .resumo-panel {
+    background: var(--gray2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .resumo-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--yellow); margin-bottom: 1.25rem; }
+  .resumo-item { display: flex; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; }
+  .resumo-item:last-child { border-bottom: none; }
+  .resumo-key { color: var(--muted); min-width: 160px; flex-shrink: 0; }
+  .resumo-val { color: var(--white); flex: 1; }
+
+  /* ── WHATSAPP BTN ── */
+  .wa-btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: #25D366; color: white;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    padding: 1rem 2rem; border-radius: 3px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .wa-btn:hover { background: #1ebe5d; transform: translateY(-1px); }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.25rem; }
+    .hero-brief { padding: 3rem 1.25rem 2rem; }
+    .form-wrap { padding: 0 1rem 4rem; }
+    .tipo-grid { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+    .steps-bar { gap: 0; }
+    .step-pill { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">Site<span>24h</span></a>
+  <a href="site-vendas-24h.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Voltar ao site
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="hero-brief">
+  <div class="hero-tag">Briefing do seu site</div>
+  <h1>CONTA PRA GENTE<br>SOBRE SEU <span>NEGÓCIO</span></h1>
+  <p>Preencha as informações abaixo. Leva menos de 10 minutos e garante que seu site seja entregue exatamente como você imaginou.</p>
+
+  <!-- Steps bar -->
+  <div class="steps-bar">
+    <div class="step-pill active" id="pill-1"><span class="step-num">01</span> Tipo de site</div>
+    <div class="step-pill" id="pill-2"><span class="step-num">02</span> Seus dados</div>
+    <div class="step-pill" id="pill-3"><span class="step-num">03</span> Sobre o negócio</div>
+    <div class="step-pill" id="pill-4"><span class="step-num">04</span> Design</div>
+    <div class="step-pill" id="pill-5"><span class="step-num">05</span> Revisão</div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrap">
+
+  <!-- Progress -->
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span id="progress-txt">Passo 1 de 5</span>
+      <span id="progress-pct">20%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+  </div>
+
+  <!-- ══ STEP 1: TIPO ════════════════════════════════════════ -->
+  <div class="step-panel active" id="step-1">
+    <div class="tipo-grid">
+      <div class="tipo-card" data-tipo="institucional" onclick="selectTipo(this)">
+        <span class="tipo-icon">🏢</span>
+        <div class="tipo-name">Site Institucional</div>
+        <div class="tipo-desc">Apresentação da empresa, serviços, contato e localização.</div>
+      </div>
+      <div class="tipo-card" data-tipo="loja" onclick="selectTipo(this)">
+        <span class="tipo-icon">🛒</span>
+        <div class="tipo-name">Loja Virtual</div>
+        <div class="tipo-desc">Catálogo de produtos, carrinho e pagamento online integrado.</div>
+      </div>
+      <div class="tipo-card" data-tipo="portfolio" onclick="selectTipo(this)">
+        <span class="tipo-icon">💼</span>
+        <div class="tipo-name">Portfólio / Profissional</div>
+        <div class="tipo-desc">Para autônomos, consultores, médicos, advogados e similares.</div>
+      </div>
+      <div class="tipo-card" data-tipo="restaurante" onclick="selectTipo(this)">
+        <span class="tipo-icon">🍽️</span>
+        <div class="tipo-name">Restaurante / Cardápio</div>
+        <div class="tipo-desc">Cardápio digital, horários, reservas e delivery.</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn-next" id="btn-next-1" onclick="goStep(2)" disabled>Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: DADOS ══════════════════════════════════════ -->
+  <div class="step-panel" id="step-2">
+    <div class="field-group">
+      <div class="field-group-title">Seus dados de contato</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Nome completo <span class="req">*</span></label>
+          <input type="text" id="f-nome" placeholder="Seu nome" oninput="checkStep2()">
+        </div>
+        <div class="field">
+          <label>WhatsApp <span class="req">*</span></label>
+          <input type="tel" id="f-whatsapp" placeholder="(85) 9 9999-9999" oninput="checkStep2()">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>E-mail <span class="req">*</span></label>
+        <input type="email" id="f-email" placeholder="seuemail@dominio.com" oninput="checkStep2()">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Cidade</label>
+          <input type="text" id="f-cidade" placeholder="Ex: Fortaleza">
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="f-estado">
+            <option value="">Selecione...</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option selected>CE</option><option>SE</option><option>SP</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-prev" onclick="goStep(1)">← Voltar</button>
+      <button class="btn-next" id="btn-next-2" onclick="goStep(3)" disabled>Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: NEGÓCIO ════════════════════════════════════ -->
+  <div class="step-panel" id="step-3">
+
+    <!-- BASE (todos os tipos) -->
+    <div class="field-group">
+      <div class="field-group-title">Sobre o negócio</div>
+
+      <div class="field">
+        <label>Nome do negócio / empresa <span class="req">*</span></label>
+        <input type="text" id="f-empresa" placeholder="Nome que vai aparecer no site" oninput="checkStep3()">
+      </div>
+
+      <div class="field">
+        <label>Slogan ou frase de impacto</label>
+        <div class="hint">Uma frase curta que resume o que você faz. Ex: "O melhor hambúrguer de Fortaleza"</div>
+        <input type="text" id="f-slogan" placeholder="Opcional">
+      </div>
+
+      <div class="field">
+        <label>Descrição do negócio <span class="req">*</span></label>
+        <div class="hint">O que você faz, para quem, e o que te diferencia.</div>
+        <textarea id="f-descricao" placeholder="Descreva seu negócio em poucas palavras..." oninput="checkStep3()"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Telefone / WhatsApp do negócio</label>
+          <input type="tel" id="f-tel-neg" placeholder="(XX) 9 XXXX-XXXX">
+        </div>
+        <div class="field">
+          <label>Instagram (se tiver)</label>
+          <input type="text" id="f-insta" placeholder="@seuperfil">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Endereço físico (se tiver)</label>
+        <input type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade">
+      </div>
+    </div>
+
+    <!-- INSTITUCIONAL -->
+    <div class="field-group tipo-block" data-bloco="institucional" style="display:none">
+      <div class="field-group-title">Páginas e seções desejadas</div>
+      <div class="field">
+        <label>Quais páginas você quer no site?</label>
+        <div class="check-group" id="paginas-check">
+          <label class="check-item"><input type="checkbox" value="Inicio" checked> Início (Home)</label>
+          <label class="check-item"><input type="checkbox" value="Sobre"> Sobre nós / Quem somos</label>
+          <label class="check-item"><input type="checkbox" value="Servicos"> Serviços</label>
+          <label class="check-item"><input type="checkbox" value="Fotos"> Galeria de fotos</label>
+          <label class="check-item"><input type="checkbox" value="Depoimentos"> Depoimentos de clientes</label>
+          <label class="check-item"><input type="checkbox" value="Contato"> Contato e localização</label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:1rem">
+        <label>Algum texto ou conteúdo que você já tem pronto?</label>
+        <textarea id="f-conteudo-inst" placeholder="Cole aqui textos sobre a empresa, serviços, equipe..."></textarea>
+      </div>
+    </div>
+
+    <!-- LOJA VIRTUAL -->
+    <div class="field-group tipo-block" data-bloco="loja" style="display:none">
+      <div class="field-group-title">Informações da loja</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Quantos produtos aproximadamente?</label>
+          <select id="f-qtd-prod">
+            <option value="">Selecione...</option>
+            <option>Até 10</option>
+            <option>11 a 30</option>
+            <option>31 a 50</option>
+            <option>Mais de 50</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ticket médio dos produtos</label>
+          <select id="f-ticket">
+            <option value="">Selecione...</option>
+            <option>Abaixo de R$ 50</option>
+            <option>R$ 50 a R$ 150</option>
+            <option>R$ 150 a R$ 500</option>
+            <option>Acima de R$ 500</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Formas de pagamento desejadas</label>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" value="PIX"> PIX</label>
+          <label class="check-item"><input type="checkbox" value="Cartao"> Cartão de crédito/débito</label>
+          <label class="check-item"><input type="checkbox" value="Boleto"> Boleto bancário</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Forma de entrega</label>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" value="Correios"> Correios</label>
+          <label class="check-item"><input type="checkbox" value="Motoboy"> Motoboy próprio</label>
+          <label class="check-item"><input type="checkbox" value="Retirada"> Retirada na loja</label>
+          <label class="check-item"><input type="checkbox" value="Digital"> Produto digital (sem entrega)</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="field-group tipo-block" data-bloco="portfolio" style="display:none">
+      <div class="field-group-title">Seu perfil profissional</div>
+      <div class="field">
+        <label>Qual é sua profissão / especialidade? <span class="req">*</span></label>
+        <input type="text" id="f-profissao" placeholder="Ex: Psicóloga clínica, Advogado tributarista, Designer gráfico...">
+      </div>
+      <div class="field">
+        <label>Quais serviços ou especialidades você oferece?</label>
+        <textarea id="f-servicos-port" placeholder="Liste seus principais serviços ou áreas de atuação..."></textarea>
+      </div>
+      <div class="field">
+        <label>Você quer um formulário de agendamento ou contato?</label>
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="agendamento" value="Sim, formulário de agendamento"> Sim, formulário de agendamento online</label>
+          <label class="check-item"><input type="radio" name="agendamento" value="Só botão de WhatsApp"> Só botão de WhatsApp</label>
+          <label class="check-item"><input type="radio" name="agendamento" value="Formulário de contato simples"> Formulário de contato simples</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Número de registro profissional (CRM, OAB, CRP...)</label>
+        <input type="text" id="f-registro" placeholder="Opcional — transmite credibilidade">
+      </div>
+    </div>
+
+    <!-- RESTAURANTE -->
+    <div class="field-group tipo-block" data-bloco="restaurante" style="display:none">
+      <div class="field-group-title">Informações do estabelecimento</div>
+      <div class="field">
+        <label>Tipo de culinária / especialidade</label>
+        <input type="text" id="f-culinaria" placeholder="Ex: Pizzaria artesanal, Japonês contemporâneo, Churrascaria...">
+      </div>
+      <div class="field">
+        <label>Horário de funcionamento</label>
+        <textarea id="f-horario" placeholder="Ex: Seg a Sex das 11h às 22h / Sáb e Dom das 11h às 23h" style="min-height:70px"></textarea>
+      </div>
+      <div class="field">
+        <label>Funcionalidades desejadas no site</label>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" value="Cardapio digital"> Cardápio digital com fotos</label>
+          <label class="check-item"><input type="checkbox" value="Reservas"> Formulário de reservas</label>
+          <label class="check-item"><input type="checkbox" value="Delivery"> Botão para delivery (iFood, WhatsApp)</label>
+          <label class="check-item"><input type="checkbox" value="Eventos"> Seção de eventos e promoções</label>
+          <label class="check-item"><input type="checkbox" value="Galeria"> Galeria de fotos dos pratos</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Você tem cardápio digital ou em PDF?</label>
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="cardapio" value="Sim, tenho PDF"> Sim, tenho em PDF</label>
+          <label class="check-item"><input type="radio" name="cardapio" value="Vou enviar fotos dos pratos"> Vou enviar fotos dos pratos</label>
+          <label class="check-item"><input type="radio" name="cardapio" value="Preciso de ajuda para montar"> Preciso de ajuda para montar</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-prev" onclick="goStep(2)">← Voltar</button>
+      <button class="btn-next" id="btn-next-3" onclick="goStep(4)" disabled>Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: DESIGN ════════════════════════════════════ -->
+  <div class="step-panel" id="step-4">
+
+    <div class="field-group">
+      <div class="field-group-title">Identidade visual</div>
+
+      <div class="field">
+        <label>Você já tem logotipo?</label>
+        <div class="check-group" id="logo-check">
+          <label class="check-item"><input type="radio" name="logo" value="Sim, vou enviar" onchange="toggleLogoUpload(true)"> Sim, vou enviar</label>
+          <label class="check-item"><input type="radio" name="logo" value="Não tenho logo ainda" onchange="toggleLogoUpload(false)"> Não tenho logo ainda</label>
+        </div>
+      </div>
+
+      <div class="field" id="logo-upload-area" style="display:none">
+        <label>Envie seu logotipo</label>
+        <div class="upload-zone" id="logo-zone">
+          <input type="file" accept="image/*,.pdf,.ai,.eps" onchange="addFiles(this, 'logo-files', 'logo-zone')">
+          <span class="upload-icon">📁</span>
+          <p><strong>Clique para selecionar</strong> ou arraste o arquivo aqui</p>
+          <p>PNG, JPG, PDF, AI — fundo transparente preferível</p>
+          <div class="file-list" id="logo-files"></div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:1rem">
+        <label>Cores principais do seu negócio</label>
+        <div class="hint">Escolha até 2 cores que representam sua marca. Clique para selecionar.</div>
+        <div class="color-row" id="color-row">
+          <div class="color-opt" style="background:#f5c400" data-cor="Amarelo #F5C400" onclick="toggleColor(this)" title="Amarelo"></div>
+          <div class="color-opt" style="background:#0a0a0a" data-cor="Preto #0A0A0A" onclick="toggleColor(this)" title="Preto"></div>
+          <div class="color-opt" style="background:#ffffff;border:1.5px solid #333" data-cor="Branco #FFFFFF" onclick="toggleColor(this)" title="Branco"></div>
+          <div class="color-opt" style="background:#1a6e3c" data-cor="Verde #1A6E3C" onclick="toggleColor(this)" title="Verde"></div>
+          <div class="color-opt" style="background:#1a3a6e" data-cor="Azul escuro #1A3A6E" onclick="toggleColor(this)" title="Azul escuro"></div>
+          <div class="color-opt" style="background:#378add" data-cor="Azul claro #378ADD" onclick="toggleColor(this)" title="Azul claro"></div>
+          <div class="color-opt" style="background:#c45c00" data-cor="Laranja #C45C00" onclick="toggleColor(this)" title="Laranja"></div>
+          <div class="color-opt" style="background:#8b1a1a" data-cor="Vermelho #8B1A1A" onclick="toggleColor(this)" title="Vermelho"></div>
+          <div class="color-opt" style="background:#f5f2eb" data-cor="Creme #F5F2EB" onclick="toggleColor(this)" title="Creme"></div>
+          <div class="color-opt" style="background:#4a1a6e" data-cor="Roxo #4A1A6E" onclick="toggleColor(this)" title="Roxo"></div>
+          <div class="color-opt" style="background:#555555" data-cor="Cinza #555555" onclick="toggleColor(this)" title="Cinza"></div>
+          <div class="color-opt" style="background:#1d9e75" data-cor="Verde claro #1D9E75" onclick="toggleColor(this)" title="Verde claro"></div>
+        </div>
+        <div style="margin-top:0.75rem">
+          <input type="text" id="f-cor-custom" placeholder="Ou digite um código HEX: #FF5733" style="max-width:260px">
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title">Referências e estilo</div>
+
+      <div class="field">
+        <label>Qual estilo visual você prefere?</label>
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="estilo" value="Moderno e clean"> Moderno e clean — minimalista, muito espaço em branco</label>
+          <label class="check-item"><input type="radio" name="estilo" value="Ousado e colorido"> Ousado e colorido — cores fortes, chamativo</label>
+          <label class="check-item"><input type="radio" name="estilo" value="Elegante e sofisticado"> Elegante e sofisticado — luxury, tons escuros</label>
+          <label class="check-item"><input type="radio" name="estilo" value="Alegre e descontraído"> Alegre e descontraído — amigável, acessível</label>
+          <label class="check-item"><input type="radio" name="estilo" value="Confiança e seriedade"> Confiança e seriedade — corporativo, tons neutros</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Sites que você gosta (referências)</label>
+        <div class="hint">Coloque links de sites que você acha bonitos ou que gostaria de ter algo parecido. Não precisa ser do mesmo segmento.</div>
+        <textarea id="f-refs" placeholder="Ex: https://exemplo.com.br&#10;Gosto do estilo escuro e das fontes grandes" style="min-height:80px"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Fotos do negócio / produtos</label>
+        <div class="upload-zone">
+          <input type="file" accept="image/*" multiple onchange="addFiles(this, 'fotos-files', 'fotos-zone')" id="fotos-input">
+          <span class="upload-icon">📷</span>
+          <p><strong>Clique para selecionar</strong> ou arraste as fotos aqui</p>
+          <p>Quanto mais fotos, mais personalizado fica o site</p>
+          <div class="file-list" id="fotos-files"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title">Domínio e detalhes finais</div>
+
+      <div class="field">
+        <label>Você já tem um domínio? (ex: seunegocio.com.br)</label>
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="dominio" value="Sim, já tenho"> Sim, já tenho</label>
+          <label class="check-item"><input type="radio" name="dominio" value="Não, quero um novo"> Não, quero que vocês registrem um para mim</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nome de domínio desejado</label>
+        <div class="hint">Sugestão de endereço para o site. Verificaremos a disponibilidade.</div>
+        <input type="text" id="f-dominio" placeholder="Ex: seunegocio.com.br">
+      </div>
+
+      <div class="field">
+        <label>Observações finais / pedidos especiais</label>
+        <textarea id="f-obs" placeholder="Algum detalhe importante que não foi coberto acima? Seções específicas, funcionalidades, restrições..." style="min-height:80px"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-prev" onclick="goStep(3)">← Voltar</button>
+      <button class="btn-next" onclick="goStep(5)">Revisar →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5: REVISÃO ═══════════════════════════════════ -->
+  <div class="step-panel" id="step-5">
+
+    <div id="resumo-container"></div>
+
+    <div class="field-group" style="margin-top:1.5rem">
+      <div class="field-group-title">Confirmação</div>
+      <div class="field">
+        <label class="check-item" style="cursor:pointer">
+          <input type="checkbox" id="confirm-check" onchange="checkConfirm()">
+          Confirmo que as informações acima estão corretas e autorizo a Site24h a criar meu site com base nelas.
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-prev" onclick="goStep(4)">← Voltar</button>
+      <button class="btn-next" id="btn-enviar" onclick="enviarBriefing()" disabled>🚀 Enviar briefing</button>
+    </div>
+  </div>
+
+  <!-- ══ SUCESSO ═══════════════════════════════════════════ -->
+  <div class="success-panel" id="success-panel">
+    <span class="success-icon">🎉</span>
+    <h2>BRIEFING ENVIADO!</h2>
+    <p>Recebemos todas as informações do seu projeto. Nossa equipe já está trabalhando no seu site!</p>
+
+    <div class="success-box">
+      <p><strong>O que acontece agora:</strong></p>
+      <p>✓ Você receberá uma confirmação no WhatsApp em até 1 hora</p>
+      <p>✓ Seu site será entregue em até <strong>24 horas úteis</strong></p>
+      <p>✓ Enviaremos o link para você aprovar antes de publicar</p>
+    </div>
+
+    <a href="https://wa.me/5585992323542" class="wa-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Falar no WhatsApp
+    </a>
+  </div>
+
+</div><!-- /form-wrap -->
+
+<script>
+  let currentStep = 1;
+  let tipoSelecionado = '';
+  let coresSelecionadas = [];
+
+  // ── Tipo de site ──────────────────────────────────────────
+  function selectTipo(el) {
+    document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    tipoSelecionado = el.dataset.tipo;
+    document.getElementById('btn-next-1').disabled = false;
+
+    // Mostra blocos corretos no step 3
+    document.querySelectorAll('.tipo-block').forEach(b => {
+      b.style.display = b.dataset.bloco === tipoSelecionado ? 'block' : 'none';
+    });
+    checkStep3();
+  }
+
+  // ── Navegação ─────────────────────────────────────────────
+  function goStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.step-pill').forEach((p, i) => {
+      p.classList.remove('active', 'done');
+      if (i + 1 < n) p.classList.add('done');
+      if (i + 1 === n) p.classList.add('active');
+    });
+    document.getElementById(`step-${n}`).classList.add('active');
+    currentStep = n;
+    updateProgress(n);
+    if (n === 5) buildResumo();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(n) {
+    const pct = Math.round((n / 5) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-txt').textContent = `Passo ${n} de 5`;
+  }
+
+  // ── Validações ───────────────────────────────────────────
+  function checkStep2() {
+    const ok = val('f-nome') && val('f-whatsapp') && val('f-email');
+    document.getElementById('btn-next-2').disabled = !ok;
+  }
+  function checkStep3() {
+    const ok = val('f-empresa') && val('f-descricao');
+    document.getElementById('btn-next-3').disabled = !ok;
+  }
+  function checkConfirm() {
+    document.getElementById('btn-enviar').disabled = !document.getElementById('confirm-check').checked;
+  }
+  function val(id) {
+    const el = document.getElementById(id);
+    return el && el.value.trim().length > 0;
+  }
+
+  // ── Upload ───────────────────────────────────────────────
+  function addFiles(input, listId, zoneId) {
+    const list = document.getElementById(listId);
+    Array.from(input.files).forEach(file => {
+      const tag = document.createElement('div');
+      tag.className = 'file-tag';
+      tag.innerHTML = `📎 ${file.name} <button onclick="this.parentElement.remove()" title="Remover">×</button>`;
+      list.appendChild(tag);
+    });
+  }
+
+  function toggleLogoUpload(show) {
+    document.getElementById('logo-upload-area').style.display = show ? 'block' : 'none';
+  }
+
+  // ── Cores ────────────────────────────────────────────────
+  function toggleColor(el) {
+    const cor = el.dataset.cor;
+    if (el.classList.contains('sel')) {
+      el.classList.remove('sel');
+      coresSelecionadas = coresSelecionadas.filter(c => c !== cor);
+    } else {
+      if (coresSelecionadas.length >= 2) {
+        document.querySelectorAll('.color-opt.sel').forEach(c => c.classList.remove('sel'));
+        coresSelecionadas = [];
+      }
+      el.classList.add('sel');
+      coresSelecionadas.push(cor);
+    }
+  }
+
+  // ── Resumo ───────────────────────────────────────────────
+  function buildResumo() {
+    const tipoLabels = {
+      institucional: 'Site Institucional',
+      loja: 'Loja Virtual',
+      portfolio: 'Portfólio / Profissional Liberal',
+      restaurante: 'Restaurante / Cardápio'
+    };
+
+    const checkeds = (name) => {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value).join(', ') || '—';
+    };
+    const checkedBoxes = (groupId) => {
+      return Array.from(document.querySelectorAll(`#${groupId} input:checked`)).map(i => i.value).join(', ') || '—';
+    };
+    const cores = coresSelecionadas.length ? coresSelecionadas.join(', ') : (document.getElementById('f-cor-custom').value || '—');
+
+    const blocos = [
+      {
+        titulo: 'Tipo de site',
+        itens: [['Tipo escolhido', tipoLabels[tipoSelecionado] || '—']]
+      },
+      {
+        titulo: 'Seus dados',
+        itens: [
+          ['Nome', gv('f-nome')],
+          ['WhatsApp', gv('f-whatsapp')],
+          ['E-mail', gv('f-email')],
+          ['Cidade/UF', [gv('f-cidade'), gv('f-estado')].filter(Boolean).join(' / ') || '—']
+        ]
+      },
+      {
+        titulo: 'Sobre o negócio',
+        itens: [
+          ['Nome do negócio', gv('f-empresa')],
+          ['Slogan', gv('f-slogan') || '—'],
+          ['Descrição', gv('f-descricao')],
+          ['Telefone negócio', gv('f-tel-neg') || '—'],
+          ['Instagram', gv('f-insta') || '—'],
+          ['Endereço', gv('f-endereco') || '—'],
+        ]
+      },
+      {
+        titulo: 'Design e visual',
+        itens: [
+          ['Cores', cores],
+          ['Estilo', checkeds('estilo')],
+          ['Logotipo', checkeds('logo')],
+          ['Domínio desejado', gv('f-dominio') || '—'],
+          ['Referências', gv('f-refs') || '—'],
+          ['Obs finais', gv('f-obs') || '—'],
+        ]
+      }
+    ];
+
+    let html = '';
+    blocos.forEach(b => {
+      html += `<div class="resumo-panel"><div class="resumo-title">${b.titulo}</div>`;
+      b.itens.forEach(([k, v]) => {
+        html += `<div class="resumo-item"><span class="resumo-key">${k}</span><span class="resumo-val">${v || '—'}</span></div>`;
+      });
+      html += '</div>';
+    });
+
+    document.getElementById('resumo-container').innerHTML = html;
+  }
+
+  function gv(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  // ── Envio ─────────────────────────────────────────────────
+  function enviarBriefing() {
+    // Monta mensagem para WhatsApp
+    const tipoLabels = { institucional:'Site Institucional', loja:'Loja Virtual', portfolio:'Portfólio', restaurante:'Restaurante' };
+    const msg = [
+      `*NOVO BRIEFING — Site24h*`,
+      ``,
+      `*Tipo:* ${tipoLabels[tipoSelecionado] || tipoSelecionado}`,
+      `*Nome:* ${gv('f-nome')}`,
+      `*WhatsApp:* ${gv('f-whatsapp')}`,
+      `*E-mail:* ${gv('f-email')}`,
+      ``,
+      `*Negócio:* ${gv('f-empresa')}`,
+      `*Descrição:* ${gv('f-descricao')}`,
+      `*Slogan:* ${gv('f-slogan') || '—'}`,
+      `*Telefone:* ${gv('f-tel-neg') || '—'}`,
+      `*Instagram:* ${gv('f-insta') || '—'}`,
+      ``,
+      `*Cores:* ${coresSelecionadas.join(', ') || gv('f-cor-custom') || '—'}`,
+      `*Estilo:* ${Array.from(document.querySelectorAll('input[name="estilo"]:checked')).map(i=>i.value).join(', ') || '—'}`,
+      `*Domínio:* ${gv('f-dominio') || '—'}`,
+      ``,
+      `*Obs:* ${gv('f-obs') || '—'}`,
+    ].join('\n');
+
+    const waUrl = `https://wa.me/5585992323542?text=${encodeURIComponent(msg)}`;
+
+    // Esconde tudo e mostra sucesso
+    document.querySelectorAll('.step-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.step-pill').forEach(p => { p.classList.remove('active'); p.classList.add('done'); });
+    document.querySelector('.progress-bar-wrap').style.display = 'none';
+    const sp = document.getElementById('success-panel');
+    sp.style.display = 'block';
+    sp.classList.add('show');
+
+    // Abre WhatsApp em nova aba com o briefing preenchido
+    setTimeout(() => window.open(waUrl, '_blank'), 800);
+  }
+
+  // ── Check items interativos ───────────────────────────────
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox' || e.target.type === 'radio') {
+      const item = e.target.closest('.check-item');
+      if (item) {
+        if (e.target.type === 'radio') {
+          const name = e.target.name;
+          document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+            r.closest('.check-item')?.classList.remove('checked');
+          });
+        }
+        if (e.target.checked) item.classList.add('checked');
+        else item.classList.remove('checked');
+      }
+    }
+  });
+</script>
+</body>
+</html>
